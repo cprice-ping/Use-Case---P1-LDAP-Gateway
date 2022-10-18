@@ -42,3 +42,18 @@ variable "namespace" {
   type        = string
   description = "k8s namespace to deploy PD and the LDAP Gateway into"
 }
+
+variable "admin_user_id" {
+  type        = string
+  description = "P1 Admin User Id"
+}
+
+variable "admin_user_name" {
+  type        = string
+  description = "P1 Admin Username"
+}
+
+variable "admin_user_password" {
+  type        = string
+  description = "P1 Admin User Password"
+}

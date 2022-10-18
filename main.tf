@@ -3,6 +3,12 @@ terraform {
     pingone = {
       source = "pingidentity/pingone"
     }
+    davinci = {
+      source = "samir-gandhi/davinci"
+    }
+    time = {
+      source = "hashicorp/time"
+    }
   }
 }
 
@@ -45,9 +51,21 @@ resource "pingone_environment" "release_environment" {
   service {
     type = "SSO"
   }
-  # service {
-  #   type = "DaVinci"
-  # }
+  service {
+    type = "DaVinci"
+  }
+}
+
+data "pingone_role" "identity_data_admin" {
+  name = "Identity Data Admin"
+}
+
+resource "pingone_role_assignment_user" "id_admin" {
+  environment_id = var.admin_env_id
+  user_id        = var.admin_user_id
+  role_id        = data.pingone_role.identity_data_admin.id
+
+  scope_environment_id = pingone_environment.release_environment.id
 }
 
 resource "pingone_application" "demo_oidc_app" {
@@ -102,12 +120,12 @@ resource "pingone_gateway" "ldap_gateway" {
     password_authority = "LDAP"
     search_base_dn     = "ou=people,dc=example,dc=com"
 
-    user_link_attributes = ["uid", "username"]
+    user_link_attributes = ["entryUUID", "uid", "dn"]
 
     # user_migration {
     #   lookup_filter_pattern = "(|(sAMAccountName=$${identifier})(UserPrincipalName=$${identifier}))"
 
-    #   population_id = pingone_environment.my_environment.default_population_id
+    #   population_id = pingone_environment.release_environment.default_population_id
 
     #   attribute_mapping {
     #     name  = "username"
@@ -127,4 +145,28 @@ resource "pingone_gateway" "ldap_gateway" {
 resource "pingone_gateway_credential" "ldap_gateway_cred" {
   environment_id = pingone_environment.release_environment.id
   gateway_id     = pingone_gateway.ldap_gateway.id
+}
+
+provider "davinci" {
+  username                  = var.admin_user_name
+  password                  = var.admin_user_password
+  base_url                  = "https://orchestrate-api.pingone.com/v1"
+  pingone_admin_environment = var.admin_env_id
+  company_id                = pingone_environment.release_environment.id
+}
+
+// Bootstrapping P1DaVinci can take up to 40s
+resource "time_sleep" "wait" {
+  depends_on = [
+    resource.pingone_role_assignment_user.id_admin
+  ]
+  create_duration = "40s"
+}
+
+// A READ MUST be the first action after the new environment is created
+data "davinci_connections" "all" {
+  company_id = resource.pingone_environment.release_environment.id
+  depends_on = [
+    time_sleep.wait
+  ]
 }

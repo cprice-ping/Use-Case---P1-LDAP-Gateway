@@ -9,9 +9,14 @@ Note: The P1 Gateway does not require PingDirectory, any LDAP directory can be c
 ## Pre-requisites
 
 * PingOne Organization
-  * Worker Application (with sufficient rights to create an Environment)
+  * Admin Environment
+    * Sign-On Policy **cannot** include MFA for deployment
+    * Admin User
+    * Worker Application (with sufficient rights to create an Environment)
 * Terraform
 * Kubernetes cluster
+  * `kubectl`
+  * Helm
 
 ## Deployment
 
@@ -32,12 +37,16 @@ gh repo clone cprice-ping/Use-Case---P1-LDAP-Gateway
 Create a `terraform.tfvars` file and complete with your PingOne details:
 
 ```hcl
-region = "YouP1Region"
+region = "YouP1Region" # NorthAmerica | Europe | Canada | Asia
 org_id = "YourP1OrgId"
 env_name = "NameOfDeploymentEnv"
 admin_env_id = "AdminEnvironmentId"
-worker_id = "WorkerAppID"
-worker_secret = "WorkerAppSecret"
+admin_user_id = "AdminUserId"
+admin_user_name = "Admin Username" # Used to connect to DaVinci
+admin_user_password = "Admin User Password" # Used to connect to DaVinci
+worker_id = "WorkerAppID" # Admin Env Worker App with Roles to create new Envs
+worker_secret = "WorkerAppSecret" # Admin Env Worker Secret
+namespace = "k8sNamespace" # PingDirectory & P1 Gateway deployment namespace
 ```
 
 Initialize Terraform:
