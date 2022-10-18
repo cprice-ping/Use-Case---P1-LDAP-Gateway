@@ -21,7 +21,7 @@ If you haven't installed Terraform, type the following:
 brew install terraform
 ```
 
-If you don't have a PingOne Organization - (Setup Trial)[https://www.pingidentity.com/en/try-ping.html]
+If you don't have a PingOne Organization - [Setup Trial](https://www.pingidentity.com/en/try-ping.html)
 
 Clone this repo
 
