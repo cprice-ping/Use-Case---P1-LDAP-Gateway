@@ -15,16 +15,6 @@ resource "helm_release" "pingdirectory" {
     value = random_password.password.result
   }
 
-  # set {
-  #   name  = "pingdirectory.envs.ROOT_USER"
-  #   value = var.ROOT_USER
-  # }
-
-  # set {
-  #   name  = "pingdirectory.envs.ROOT_USER_DN"
-  #   value = "cn=${var.ROOT_USER}"
-  # }
-
   values = [
     "${file("ping-devops-values.yaml")}"
   ]

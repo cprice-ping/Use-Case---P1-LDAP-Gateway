@@ -1,5 +1,6 @@
 resource "kubernetes_deployment" "ldap_gateway" {
   metadata {
+    namespace = var.namespace
     name = "${local.releaseName}-ldap-gateway"
     labels = {
       "app.kubernetes.io/name" = local.releaseName,
@@ -22,7 +23,7 @@ resource "kubernetes_deployment" "ldap_gateway" {
       }
       spec {
         container {
-          image = "gcr.io/ping-identity/pingone/pingone-ldap-gateway:2.2.20"
+          image = "gcr.io/ping-identity/pingone/pingone-ldap-gateway:2.2.21"
           name  = "pingoneldapgateway"
           env {
             name = "PING_IDENTITY_ACCEPT_EULA"

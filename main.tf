@@ -88,9 +88,8 @@ resource "pingone_gateway" "ldap_gateway" {
   enabled        = true
   type           = "LDAP"
 
-  bind_dn       = "uid=svc-pingfederate,ou=People,dc=example,dc=com"
-  bind_password = random_password.password.result
-
+  bind_dn       = "uid=administrator,ou=People,dc=example,dc=com"
+  bind_password = "2FederateM0re"
   # connection_security = "TLS"
   vendor              = "PingDirectory"
 
